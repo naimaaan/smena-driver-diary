@@ -1,0 +1,9 @@
+node_modules/
+.npm-cache/
+.verification/
+dist/
+data/*.sqlite*
+.env
+playwright-report/
+test-results/
+*.log

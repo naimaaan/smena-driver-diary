@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:3000"
+    volumes:
+      - smena-data:/app/data
+    restart: unless-stopped
+    init: true
+
+volumes:
+  smena-data:

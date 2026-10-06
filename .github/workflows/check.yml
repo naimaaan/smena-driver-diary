@@ -1,0 +1,49 @@
+name: Tests and build
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - name: Build and start Docker application
+        run: docker compose up --build -d
+      - name: Verify Docker API and client
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          for (let attempt = 0; attempt < 20; attempt++) {
+            try {
+              const response = await fetch('http://localhost:8080/api/days/2026-10-01');
+              assert.equal(response.status, 200);
+              const body = await response.json();
+              assert.equal(body.summary.net, 3315);
+              const page = await fetch('http://localhost:8080');
+              assert.equal(page.status, 200);
+              assert.match(await page.text(), /<div id="root">/);
+              process.exit(0);
+            } catch (error) {
+              if (attempt === 19) throw error;
+              await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+          }
+          JS
+      - name: Docker diagnostics
+        if: failure()
+        run: docker compose logs
+      - name: Stop Docker application
+        if: always()
+        run: docker compose down

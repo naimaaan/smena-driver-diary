@@ -1,0 +1,11 @@
+node_modules
+.npm-cache
+.verification
+dist
+.git
+.env
+data/*.sqlite*
+test-results
+playwright-report
+docs
+*.log
