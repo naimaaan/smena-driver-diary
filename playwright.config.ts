@@ -16,6 +16,6 @@ export default defineConfig({
     url: 'http://127.0.0.1:5173',
     timeout: 60_000,
     reuseExistingServer: false,
-    env: { DATABASE_PATH: ':memory:', HOST: '127.0.0.1' },
+    env: { DATABASE_URL: '', DATABASE_PATH: ':memory:', HOST: '127.0.0.1' },
   },
 });

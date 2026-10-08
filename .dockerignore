@@ -3,7 +3,8 @@ node_modules
 .verification
 dist
 .git
-.env
+.env*
+.vercel
 data/*.sqlite*
 test-results
 playwright-report

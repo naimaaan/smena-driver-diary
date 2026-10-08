@@ -3,7 +3,9 @@ node_modules/
 .verification/
 dist/
 data/*.sqlite*
-.env
+.env*
+!.env.example
+.vercel/
 playwright-report/
 test-results/
 *.log

@@ -4,9 +4,11 @@ import { existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import type { ApiErrorResponse, DailyResponse } from '../shared/types.js';
 import { isDay, summarizeTrips, TIME_ZONE, validateTrip, ValidationError } from './domain.js';
-import { TripConflictError, TripStore } from './store.js';
+import { TripStore } from './store.js';
+import { TripConflictError, type TripRepository } from './repository.js';
 
 export interface AppOptions {
+  store?: TripRepository;
   databasePath?: string;
   seedFile?: string | null;
   staticRoot?: string | null;
@@ -15,8 +17,8 @@ export interface AppOptions {
 
 export function buildApp(options: AppOptions = {}): FastifyInstance {
   const app = Fastify({ logger: options.logger ?? false, bodyLimit: 16_384 });
-  const store = new TripStore(options.databasePath ?? ':memory:', options.seedFile ?? null);
-  app.addHook('onClose', async () => { store.close(); });
+  const store = options.store ?? new TripStore(options.databasePath ?? ':memory:', options.seedFile ?? null);
+  app.addHook('onClose', async () => { await store.close(); });
 
   app.setErrorHandler((error, request, reply) => {
     const statusCode = error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number' ? error.statusCode : 500;
@@ -43,11 +45,11 @@ export function buildApp(options: AppOptions = {}): FastifyInstance {
     if (!isDay(date)) {
       return reply.code(400).send({ error: { code: 'INVALID_DATE', message: 'Укажите существующую дату в формате ГГГГ-ММ-ДД.' } } satisfies ApiErrorResponse);
     }
-    const trips = store.list(date);
+    const trips = await store.list(date);
     return { date, timeZone: TIME_ZONE, trips, summary: summarizeTrips(trips) } satisfies DailyResponse;
   });
   app.post('/api/trips', async (request, reply) => {
-    const result = store.add(validateTrip(request.body));
+    const result = await store.add(validateTrip(request.body));
     return reply.code(result.created ? 201 : 200).send(result);
   });
 

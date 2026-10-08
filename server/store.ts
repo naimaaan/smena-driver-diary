@@ -3,12 +3,11 @@ import { dirname } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import type { Trip } from '../shared/types.js';
 import { tripDay, validateTrip } from './domain.js';
+import { sameTrip, TripConflictError, type TripRepository } from './repository.js';
 
-export class TripConflictError extends Error {
-  constructor() { super('Поездка с таким идентификатором уже существует с другими данными.'); }
-}
+export { TripConflictError } from './repository.js';
 
-export class TripStore {
+export class TripStore implements TripRepository {
   private readonly database: DatabaseSync;
 
   constructor(databasePath: string, seedFile: string | null = null) {
@@ -67,7 +66,7 @@ export class TripStore {
     if (result.changes === 1) return { trip, created: true };
 
     const existing = this.database.prepare('SELECT id, start, end, amount, payment, commission FROM trips WHERE id = ?').get(trip.id) as unknown as Trip;
-    if (existing.start !== trip.start || existing.end !== trip.end || existing.amount !== trip.amount || existing.payment !== trip.payment || existing.commission !== trip.commission) {
+    if (!sameTrip(existing, trip)) {
       throw new TripConflictError();
     }
     return { trip: existing, created: false };
