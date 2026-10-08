@@ -123,10 +123,7 @@ export default function TripForm({ date, open, onClose, onSaved }: Props) {
       onCancel={(event) => { event.preventDefault(); if (!saving) onClose(); }}
     >
       <div className="dialog-heading">
-        <div>
-          <span className="eyebrow">ЕЩЁ ОДНА В ДНЕВНИКЕ</span>
-          <h2 id="trip-dialog-title">Новая поездка</h2>
-        </div>
+        <h2 id="trip-dialog-title">Новая поездка</h2>
         <button type="button" className="icon-button" onClick={onClose} disabled={saving} aria-label="Закрыть форму"><X size={21} /></button>
       </div>
       <p className="dialog-description" id="trip-timezone">Время по Кызылорде, UTC+5. Суммы — в целых тенге.</p>

@@ -142,9 +142,11 @@ test('keeps exact large monetary totals readable on a 320px screen', async ({ pa
   await page.goto(`/?date=${date}`);
   await expect(page.getByTestId('daily-net')).toHaveText(/1\s*849\s*000\s*000\s*₸/);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
-  const clipped = await page.locator('.balance-value, .metric-card > strong, .payments-values strong, .trip-amount, .trip-net').evaluateAll(elements =>
+  await expect(page.locator('.breakdown-item strong')).toHaveCount(4);
+  const clipped = await page.locator('.balance-value, .breakdown-item strong, .trip-amount, .trip-commission, .trip-net').evaluateAll(elements =>
     elements.filter(element => element.scrollWidth > Math.ceil(element.getBoundingClientRect().width) + 1).length);
   expect(clipped).toBe(0);
+  await page.screenshot({ path: info.outputPath('large-values-320.png'), fullPage: true });
 });
 
 test('displays the fixed UTC+05 business time for historical dates too', async ({ page }, info) => {
