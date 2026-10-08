@@ -1,0 +1,7 @@
+taxi-night-card.webp
+Source: photograph supplied by the user for the hero card background.
+Converted to WebP for delivery; the supplied photograph remains visually unchanged.
+
+driver-stencil.svg
+Source: stencil illustration supplied by the user.
+Converted to white vector paths with transparent negative spaces for a decorative section accent.

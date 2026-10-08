@@ -104,6 +104,7 @@ test('invalid inputs are rejected before any data is written', async t => {
   const app = setup(t);
   const cases: Array<{ field: string; value: unknown }> = [
     { field: 'id', value: '' }, { field: 'id', value: '   ' }, { field: 'id', value: 10 },
+    { field: 'id', value: 'trip\0suffix' },
     { field: 'amount', value: 0 }, { field: 'amount', value: -10 }, { field: 'amount', value: 10.5 },
     { field: 'amount', value: '2400' }, { field: 'amount', value: 1_000_000_001 },
     { field: 'commission', value: -1 }, { field: 'commission', value: 2401 }, { field: 'commission', value: 1.5 },

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react';
-import { ArrowRight, Banknote, CreditCard, LoaderCircle, Plus, X } from 'lucide-react';
+import { Banknote, CreditCard, LoaderCircle, Plus, X } from 'lucide-react';
 import type { CreateTripResponse, Trip } from '../../shared/types';
 import { ApiError, money, readResponse } from '../lib';
 
@@ -112,7 +112,7 @@ export default function TripForm({ date, open, onClose, onSaved }: Props) {
   }
 
   const net = Number(fields.amount) - Number(fields.commission);
-  const preview = fields.amount && Number.isSafeInteger(net) && net >= 0 ? money(net) : '—';
+  const preview = fields.amount && Number.isSafeInteger(net) && net >= 0 ? money(net) : '-';
 
   return (
     <dialog
@@ -126,17 +126,16 @@ export default function TripForm({ date, open, onClose, onSaved }: Props) {
         <h2 id="trip-dialog-title">Новая поездка</h2>
         <button type="button" className="icon-button" onClick={onClose} disabled={saving} aria-label="Закрыть форму"><X size={21} /></button>
       </div>
-      <p className="dialog-description" id="trip-timezone">Время по Кызылорде, UTC+5. Суммы — в целых тенге.</p>
       <form onSubmit={submit}>
         <div className="form-grid">
           <label className="field">
             <span id="trip-start-label">Начало поездки</span>
-            <input autoFocus type="datetime-local" required step="60" value={fields.start} onChange={(event) => update('start', event.target.value)} aria-labelledby="trip-start-label" aria-describedby={fieldErrors.start ? 'error-start' : 'trip-timezone'} aria-invalid={!!fieldErrors.start} disabled={saving} />
+            <input autoFocus type="datetime-local" required step="60" value={fields.start} onChange={(event) => update('start', event.target.value)} aria-labelledby="trip-start-label" aria-describedby={fieldErrors.start ? 'error-start' : undefined} aria-invalid={!!fieldErrors.start} disabled={saving} />
             {fieldErrors.start && <small id="error-start" className="field-error">{fieldErrors.start}</small>}
           </label>
           <label className="field">
             <span id="trip-end-label">Окончание поездки</span>
-            <input type="datetime-local" required step="60" value={fields.end} onChange={(event) => update('end', event.target.value)} aria-labelledby="trip-end-label" aria-describedby={fieldErrors.end ? 'error-end' : 'trip-timezone'} aria-invalid={!!fieldErrors.end} disabled={saving} />
+            <input type="datetime-local" required step="60" value={fields.end} onChange={(event) => update('end', event.target.value)} aria-labelledby="trip-end-label" aria-describedby={fieldErrors.end ? 'error-end' : undefined} aria-invalid={!!fieldErrors.end} disabled={saving} />
             {fieldErrors.end && <small id="error-end" className="field-error">{fieldErrors.end}</small>}
           </label>
           <label className="field">
@@ -168,7 +167,6 @@ export default function TripForm({ date, open, onClose, onSaved }: Props) {
         <button className="primary-button form-submit" type="submit" disabled={saving}>
           {saving ? <LoaderCircle size={19} className="animate-spin" /> : <Plus size={20} />}
           <span>{saving ? 'Сохраняем поездку…' : 'Сохранить поездку'}</span>
-          {!saving && <ArrowRight size={19} />}
         </button>
         <p className="form-note">День поездки определяется по времени её начала.</p>
       </form>

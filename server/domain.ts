@@ -59,8 +59,10 @@ export function validateTrip(input: unknown): Trip {
     throw new ValidationError({ body: 'Передайте поездку как JSON-объект.' });
   }
   const body = input as Record<string, unknown>;
-  if (typeof body.id !== 'string' || body.id.length < 1 || body.id.length > 128 || body.id.trim() !== body.id) {
-    fields.id = 'Укажите идентификатор длиной от 1 до 128 символов без пробелов по краям.';
+  // node:sqlite truncates TEXT at an embedded NUL on read; reject it before
+  // insertion so every response preserves the client's idempotency identifier.
+  if (typeof body.id !== 'string' || body.id.length < 1 || body.id.length > 128 || body.id.trim() !== body.id || body.id.includes('\0')) {
+    fields.id = 'Укажите идентификатор длиной от 1 до 128 символов без пробелов по краям и нулевых символов.';
   }
   const start = parseTimestamp(body.start);
   const end = parseTimestamp(body.end);
