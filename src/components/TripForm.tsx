@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react';
 import { Banknote, CreditCard, LoaderCircle, Plus, X } from 'lucide-react';
-import type { CreateTripResponse, Trip } from '../../shared/types';
-import { ApiError, money, readResponse } from '../lib';
+import type { Trip } from '../../shared/types';
+import { createTrip } from '../data/service';
+import { ApiError, money } from '../lib';
 
 interface Fields {
   start: string;
@@ -89,12 +90,7 @@ export default function TripForm({ date, open, onClose, onSaved }: Props) {
     setError('');
     setFieldErrors({});
     try {
-      const response = await fetch('/api/trips', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: attempt.current.id, ...payload }),
-      });
-      const result = await readResponse<CreateTripResponse>(response);
+      const result = await createTrip({ id: attempt.current.id, ...payload });
       attempt.current = null;
       hasDraft.current = false;
       onSaved(result.trip, result.created);

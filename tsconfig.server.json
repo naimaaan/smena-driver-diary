@@ -5,5 +5,5 @@
     "esModuleInterop": true, "rootDir": ".", "outDir": "dist",
     "types": ["node"], "sourceMap": true
   },
-  "include": ["server", "shared", "api"]
+  "include": ["server", "shared"]
 }

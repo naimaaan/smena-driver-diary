@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { ArrowDown, ArrowRight, ArrowUpRight, Banknote, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, CreditCard, Info, LoaderCircle, Plus, RefreshCw, Route, X } from 'lucide-react';
 import type { DailyResponse, Trip } from '../shared/types';
 import TripForm from './components/TripForm';
-import { addDays, ApiError, dayLabel, initialDate, isDate, money, readResponse, time, tripDay, weekFor } from './lib';
+import { DEMO_MODE, getDay } from './data/service';
+import { addDays, ApiError, dayLabel, initialDate, isDate, money, time, tripDay, weekFor } from './lib';
 
 type LoadState = { status: 'loading' } | { status: 'error'; message: string } | { status: 'ready'; data: DailyResponse };
 
@@ -152,8 +153,7 @@ export default function App() {
     window.history.replaceState({}, '', url);
     const controller = new AbortController();
     setLoad({ status: 'loading' });
-    fetch(`/api/days/${date}`, { signal: controller.signal })
-      .then((response) => readResponse<DailyResponse>(response))
+    getDay(date, controller.signal)
       .then((data) => { if (!controller.signal.aborted) setLoad({ status: 'ready', data }); })
       .catch((cause: unknown) => {
         if (!controller.signal.aborted) setLoad({ status: 'error', message: cause instanceof ApiError ? cause.message : 'Не удалось загрузить поездки. Проверьте соединение и попробуйте ещё раз.' });
@@ -212,7 +212,7 @@ export default function App() {
           {ready && <><Breakdown data={load.data} /><TripList data={load.data} onAdd={() => setFormOpen(true)} /></>}
         </div>
       </main>
-      <footer className="site-footer page-container"><span className="footer-brand">смена.</span><span><Clock3 size={17} />Кызылорда · UTC+5</span></footer>
+      <footer className="site-footer page-container"><span className="footer-brand">смена.</span>{DEMO_MODE && <span>Демо · данные хранятся в этом браузере</span>}<span><Clock3 size={17} />Кызылорда · UTC+5</span></footer>
       <button className="primary-button floating-add-button" type="button" onClick={() => setFormOpen(true)}><Plus size={22} /><span>Добавить поездку</span></button>
       <TripForm date={date} open={formOpen} onClose={() => setFormOpen(false)} onSaved={saved} />
     </>

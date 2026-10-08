@@ -9,20 +9,6 @@ jobs:
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    services:
-      postgres:
-        image: postgres:17-alpine
-        env:
-          POSTGRES_DB: smena_test
-          POSTGRES_USER: smena
-          POSTGRES_PASSWORD: smena_test_only
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U smena -d smena_test"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -31,10 +17,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
-        env:
-          TEST_DATABASE_URL: postgres://smena:smena_test_only@127.0.0.1:5432/smena_test
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
+      - run: npm run build:demo
+      - run: npm run test:demo
       - name: Build and start Docker application
         run: docker compose up --build -d
       - name: Verify Docker API and client

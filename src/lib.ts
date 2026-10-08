@@ -1,4 +1,4 @@
-import type { ApiErrorResponse } from '../shared/types';
+import type { ApiErrorResponse } from '../shared/types.js';
 
 export const TIME_ZONE = 'Asia/Qyzylorda';
 const moneyFormatter = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 });

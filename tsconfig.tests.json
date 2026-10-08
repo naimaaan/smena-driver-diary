@@ -4,5 +4,5 @@
     "strict": true, "skipLibCheck": true, "esModuleInterop": true,
     "noEmit": true, "types": ["node"]
   },
-  "include": ["tests", "playwright.config.ts", "server", "shared", "api"]
+  "include": ["tests", "playwright.config.ts", "playwright.demo.config.ts", "server", "shared"]
 }
